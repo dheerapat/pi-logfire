@@ -1,4 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { Span } from "@opentelemetry/api";
 import * as logfire from "@pydantic/logfire-node";
 
 export default function (pi: ExtensionAPI) {
@@ -9,9 +10,9 @@ export default function (pi: ExtensionAPI) {
 
   // Active spans — stored by index/call-id so we can end() them in paired events
   const spans = {
-    agent: null as { end(): void } | null,
-    turns: new Map<number, { end(): void }>(),
-    tools: new Map<string, { end(): void }>(),
+    agent: null as Span | null,
+    turns: new Map<number, Span>(),
+    tools: new Map<string, Span>(),
     curTurn: -1,
   };
 

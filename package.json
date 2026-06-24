@@ -2,12 +2,27 @@
   "name": "pi-logfire",
   "version": "0.1.0",
   "description": "LLM observability for pi via Logfire — trace turns, tool calls, and agent sessions",
-  "keywords": ["pi-package", "logfire", "observability", "llm", "telemetry"],
+  "keywords": [
+    "pi-package",
+    "logfire",
+    "observability",
+    "llm",
+    "telemetry"
+  ],
   "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "pi": {
-    "extensions": ["./extensions/index.ts"]
+    "extensions": [
+      "./extensions/index.ts"
+    ]
   },
   "dependencies": {
     "@pydantic/logfire-node": "^0.18.0"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.2",
+    "typescript": "~5.8.0"
   }
 }
