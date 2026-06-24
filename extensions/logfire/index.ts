@@ -11,7 +11,16 @@ export default function (pi: ExtensionAPI) {
   // No token? No telemetry. Silent no-op, zero overhead.
   if (!process.env.LOGFIRE_TOKEN) return;
 
-  logfire.configure({ serviceName: "pi", sendToLogfire: "if-token-present" });
+  logfire.configure({
+    serviceName: "pi",
+    sendToLogfire: "if-token-present",
+    // Only the extension's explicit spans — no auto-instrumented HTTP noise
+    nodeAutoInstrumentations: {
+      "@opentelemetry/instrumentation-http": { enabled: false },
+      "@opentelemetry/instrumentation-undici": { enabled: false },
+      "@opentelemetry/instrumentation-openai": { enabled: false },
+    },
+  });
 
   // Active spans — stored by index/call-id so we can end() them in paired events
   const spans = {
@@ -82,12 +91,20 @@ export default function (pi: ExtensionAPI) {
   pi.on("tool_call", (event) => {
     spans.tools.set(
       event.toolCallId,
-      logfire.startSpan(`tool: ${event.toolName}`, { tool_name: event.toolName }, { parentSpan: spans.turns.get(spans.curTurn) ?? undefined }),
+      logfire.startSpan(`tool: ${event.toolName}`, {
+        tool_name: event.toolName,
+        tool_input: truncate(JSON.stringify(event.input)),
+      }, { parentSpan: spans.turns.get(spans.curTurn) ?? undefined }),
     );
   });
 
   pi.on("tool_execution_end", (event) => {
-    spans.tools.get(event.toolCallId)?.end();
+    const span = spans.tools.get(event.toolCallId);
+    if (span) {
+      span.setAttribute("is_error", event.isError);
+      if (event.result) span.setAttribute("tool_result", truncate(JSON.stringify(event.result)));
+      span.end();
+    }
     spans.tools.delete(event.toolCallId);
   });
 
