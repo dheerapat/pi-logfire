@@ -1,0 +1,13 @@
+{
+  "name": "pi-logfire",
+  "version": "0.1.0",
+  "description": "LLM observability for pi via Logfire — trace turns, tool calls, and agent sessions",
+  "keywords": ["pi-package", "logfire", "observability", "llm", "telemetry"],
+  "type": "module",
+  "pi": {
+    "extensions": ["./extensions/index.ts"]
+  },
+  "dependencies": {
+    "@pydantic/logfire-node": "^0.18.0"
+  }
+}
