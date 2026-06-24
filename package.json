@@ -15,7 +15,7 @@
   },
   "pi": {
     "extensions": [
-      "./extensions/index.ts"
+      "./extensions/logfire/index.ts"
     ]
   },
   "dependencies": {
